@@ -71,7 +71,7 @@ export function ViajeCard({
         )}
       </Link>
 
-      {conAcciones && viaje.EstadoViaje === 'Pendiente' && (
+      {conAcciones && (viaje.EstadoViaje === 'Pendiente' || viaje.EstadoViaje === 'Asignado') && (
         <div className="viaje-card__acciones">
           <Link to={`/viajes/${viaje.IdViaje}?accion=asignar`} className="btn btn--primario btn--chico">
             {viaje.Chofer ? 'Reasignar chofer' : 'Asignar chofer'}

@@ -193,7 +193,7 @@ export function FormularioAsignacion({
         ocupado={ocupado}
         error={error}
         onCancelar={onCancelar}
-        textoGuardar="Asignar viaje"
+        textoGuardar={viaje.Chofer ? 'Reasignar viaje' : 'Asignar viaje'}
         deshabilitado={!puedeAsignar}
       />
     </form>

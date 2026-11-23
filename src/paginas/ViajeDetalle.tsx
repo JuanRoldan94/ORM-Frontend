@@ -27,7 +27,10 @@ export function ViajeDetalle() {
   const [elegida, setVentana] = useState<Ventana>(null)
   const [extravioEditado, setExtravioEditado] = useState<Extravio | null>(null)
 
-  const pidioAsignar = params.get('accion') === 'asignar' && viaje?.EstadoViaje === 'Pendiente'
+  const puedeAsignarOReasignar =
+    viaje?.EstadoViaje === 'Pendiente' || viaje?.EstadoViaje === 'Asignado'
+  const pidioAsignar =
+    params.get('accion') === 'asignar' && puedeAsignarOReasignar
   const ventana: Ventana = elegida ?? (pidioAsignar ? 'asignar' : null)
 
   if (cargando && !viaje) return <Cargando />
@@ -155,10 +158,10 @@ export function ViajeDetalle() {
         </div>
 
         <div className="detalle__lateral">
-          {(pendiente || avances.length > 0 || cancelaciones.length > 0) && (
+          {(puedeAsignarOReasignar || avances.length > 0 || cancelaciones.length > 0) && (
             <section className="tarjeta acciones-viaje">
               <h2 className="seccion__titulo">Acciones</h2>
-              {pendiente && (
+              {puedeAsignarOReasignar && (
                 <button type="button" className="btn btn--primario btn--ancho" onClick={() => setVentana('asignar')}>
                   {viaje.Chofer ? 'Reasignar chofer' : 'Asignar chofer'}
                 </button>
@@ -267,7 +270,11 @@ export function ViajeDetalle() {
         </form>
       </Modal>
 
-      <Modal abierto={ventana === 'asignar'} titulo="Asignar chofer" onCerrar={cerrar}>
+      <Modal
+        abierto={ventana === 'asignar'}
+        titulo={viaje.Chofer ? 'Reasignar chofer' : 'Asignar chofer'}
+        onCerrar={cerrar}
+      >
         <FormularioAsignacion viaje={viaje} onGuardado={guardado} onCancelar={cerrar} />
       </Modal>
 

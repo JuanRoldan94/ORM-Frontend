@@ -88,7 +88,7 @@ export function ViajeFila({
       </Link>
 
       <div className="viaje-fila__acciones">
-        {conAcciones && viaje.EstadoViaje === 'Pendiente' && (
+        {conAcciones && (viaje.EstadoViaje === 'Pendiente' || viaje.EstadoViaje === 'Asignado') && (
           <Link
             to={`/viajes/${viaje.IdViaje}?accion=asignar`}
             className="btn btn--primario btn--chico viaje-fila__btn"
