@@ -58,6 +58,15 @@ export function ViajeCard({
                 {viaje.Vehiculo.Patente}
               </span>
             )}
+            {viaje.EstadoViaje === 'Pendiente' && (
+              <span
+                className="badge badge--lila"
+                title="Viaje pendiente en espera de que el chofer complete su viaje activo"
+                style={{ fontSize: '0.7rem', padding: '1px 6px' }}
+              >
+                En espera
+              </span>
+            )}
           </p>
         )}
       </Link>

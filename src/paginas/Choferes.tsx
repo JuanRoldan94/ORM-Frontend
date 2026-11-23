@@ -22,6 +22,7 @@ export function Choferes() {
   )
   const [ventana, setVentana] = useState<Ventana>(null)
   const baja = useAccion()
+  const cambioEstado = useAccion()
 
   const guardado = () => {
     setVentana(null)
@@ -53,7 +54,9 @@ export function Choferes() {
         ]}
       />
 
-      {(error || baja.error) && <Aviso>{error ?? baja.error}</Aviso>}
+      {(error || baja.error || cambioEstado.error) && (
+        <Aviso>{error ?? baja.error ?? cambioEstado.error}</Aviso>
+      )}
       {cargando && !datos && <Cargando />}
       {datos?.length === 0 && <Vacio titulo="No hay choferes para mostrar" />}
 
@@ -81,9 +84,13 @@ export function Choferes() {
                         value={c.EstadoChofer}
                         className={`select-estado select-estado--${ESTADO_CHOFER[c.EstadoChofer].tono}`}
                         title="Cambiar estado del chofer"
+                        disabled={cambioEstado.ocupado}
                         onChange={(e) => {
                           const nuevo = e.target.value as Exclude<EstadoChofer, 'EnViaje'>
-                          void api.choferes.editar(c.IdChofer, { EstadoChofer: nuevo }).then(() => recargar())
+                          void cambioEstado.ejecutar(async () => {
+                            await api.choferes.editar(c.IdChofer, { EstadoChofer: nuevo })
+                            recargar()
+                          })
                         }}
                       >
                         <option value="Libre">Libre</option>

@@ -19,7 +19,7 @@ export function FormularioAsignacion({
 }) {
   const { ocupado, error, setError, ejecutar } = useAccion()
   const choferesCarga = useCarga(() => api.choferes.listar(), 'choferes-asignacion')
-  const [idChofer, setIdChofer] = useState<number | null>(null)
+  const [idChofer, setIdChofer] = useState<number | null>(() => viaje.IdChofer ?? null)
 
   if (choferesCarga.cargando && !choferesCarga.datos) return <Cargando />
   if (choferesCarga.error) return <Aviso>{choferesCarga.error}</Aviso>
@@ -28,9 +28,10 @@ export function FormularioAsignacion({
     if (c.EstadoChofer === 'FueraDeServicio' || c.EstadoChofer === 'Vacaciones') {
       return false
     }
-    const viajesActivos = c.Viajes?.length ?? 0
+    const otrosViajesActivos =
+      c.Viajes?.filter((v) => v.IdViaje !== viaje.IdViaje).length ?? 0
     const maxViajes = c.MaxViajes ?? 1
-    return viajesActivos < maxViajes
+    return otrosViajesActivos < maxViajes
   })
 
   if (!choferesDisponibles.length) {
@@ -51,7 +52,8 @@ export function FormularioAsignacion({
   const chofer = choferesDisponibles.find((c) => c.IdChofer === idChofer)
   const tieneVehiculo = Boolean(chofer?.VehiculoActual)
   const vehiculoOperativo = chofer?.VehiculoActual?.EstadoOperativo === 'Operativo'
-  const yaTieneViajeActivo = (chofer?.Viajes?.length ?? 0) > 0
+  const yaTieneOtroViajeActivo =
+    (chofer?.Viajes?.filter((v) => v.IdViaje !== viaje.IdViaje).length ?? 0) > 0
   const puedeAsignar = chofer && tieneVehiculo && vehiculoOperativo
 
   return (
@@ -96,7 +98,8 @@ export function FormularioAsignacion({
           <option value="">Seleccionar un chofer…</option>
           {choferesDisponibles.map((c) => {
             const vehiculoOp = c.VehiculoActual?.EstadoOperativo === 'Operativo'
-            const cantActivos = c.Viajes?.length ?? 0
+            const cantOtrosActivos =
+              c.Viajes?.filter((v) => v.IdViaje !== viaje.IdViaje).length ?? 0
             const limite = c.MaxViajes ?? 1
             const vehiculoTexto = c.VehiculoActual
               ? vehiculoOp
@@ -104,9 +107,9 @@ export function FormularioAsignacion({
                 : `${c.VehiculoActual.Patente} (No operativo)`
               : 'Sin vehículo'
             const estadoCupo =
-              cantActivos === 0
+              cantOtrosActivos === 0
                 ? 'Libre'
-                : `Con viaje activo (${cantActivos}/${limite})`
+                : `Con viaje activo (${cantOtrosActivos}/${limite})`
             return (
               <option key={c.IdChofer} value={c.IdChofer}>
                 {c.Nombre} {c.Apellido} — {vehiculoTexto} [{estadoCupo}]
@@ -161,10 +164,10 @@ export function FormularioAsignacion({
         </div>
       </Campo>
 
-      {chofer && yaTieneViajeActivo && (
+      {chofer && yaTieneOtroViajeActivo && (
         <Aviso tipo="info">
           <Info size={16} aria-hidden="true" style={{ verticalAlign: 'middle', marginRight: 6 }} />
-          El chofer <strong>{chofer.Nombre} {chofer.Apellido}</strong> ya tiene un viaje activo. Este
+          El chofer <strong>{chofer.Nombre} {chofer.Apellido}</strong> ya tiene otro viaje activo. Este
           viaje se guardará como <strong>viaje pendiente</strong> en su cola y se activará cuando
           complete el actual.
         </Aviso>

@@ -20,7 +20,11 @@ export function Panel() {
   const [filtro, setFiltro] = useState<EstadoDeViaje | 'todos'>('todos')
 
   useEffect(() => {
-    const t = setInterval(recargar, REFRESCO_MS)
+    const t = setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        recargar()
+      }
+    }, REFRESCO_MS)
     return () => clearInterval(t)
   }, [recargar])
 

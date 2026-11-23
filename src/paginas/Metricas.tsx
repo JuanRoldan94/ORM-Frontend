@@ -80,15 +80,17 @@ export function Metricas() {
     }
   }
 
+  const rangoInvalido = Boolean(fechaDesde && fechaHasta && fechaDesde > fechaHasta)
+
   const viajesFiltrados = useMemo(() => {
-    if (!viajes) return []
+    if (!viajes || rangoInvalido) return []
     return viajes.filter((v) => {
       const d = aStringFecha(new Date(v.CreadoEl))
       if (fechaDesde && d < fechaDesde) return false
       if (fechaHasta && d > fechaHasta) return false
       return true
     })
-  }, [viajes, fechaDesde, fechaHasta])
+  }, [viajes, fechaDesde, fechaHasta, rangoInvalido])
 
   const metricas = useMemo(() => {
     const total = viajesFiltrados.length
@@ -114,7 +116,7 @@ export function Metricas() {
   }, [viajesFiltrados])
 
   const diasGrafico = useMemo(() => {
-    if (!viajesFiltrados.length && !fechaDesde && !fechaHasta) return []
+    if (rangoInvalido || (!viajesFiltrados.length && !fechaDesde && !fechaHasta)) return []
 
     let inicio: Date
     let fin: Date
@@ -181,7 +183,7 @@ export function Metricas() {
     }
 
     return Object.values(mapaDias)
-  }, [viajesFiltrados, fechaDesde, fechaHasta])
+  }, [viajesFiltrados, fechaDesde, fechaHasta, rangoInvalido])
 
   const maxViajesDia = useMemo(() => {
     return Math.max(...diasGrafico.map((d) => d.total), 1)
@@ -322,6 +324,12 @@ export function Metricas() {
           )}
         </div>
       </div>
+
+      {rangoInvalido && (
+        <Aviso>
+          La fecha <strong>Desde</strong> ({fechaDesde}) no puede ser posterior a la fecha <strong>Hasta</strong> ({fechaHasta}).
+        </Aviso>
+      )}
 
       {cargando && !viajes && <Cargando />}
       {error && (
