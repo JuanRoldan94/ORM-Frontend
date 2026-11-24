@@ -130,3 +130,29 @@ export interface DatosExtravio {
   IdViaje: number
   IdCliente: number
 }
+
+export interface ScopeMantenimientoInfo {
+  isActive: boolean
+  message: string
+}
+
+export interface ScopeMantenimientoCompleto {
+  scope: string
+  isActive: boolean
+  message: string
+}
+
+export interface EstadoMantenimientoRespuesta {
+  global: {
+    isActive: boolean
+    message?: string
+  }
+  activeScopes: Record<string, ScopeMantenimientoInfo>
+  allScopes: ScopeMantenimientoCompleto[]
+}
+
+export interface EventoBloqueoMantenimiento {
+  code: 'MAINTENANCE_MODE'
+  scope: string
+  message: string
+}

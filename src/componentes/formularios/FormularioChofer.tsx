@@ -30,6 +30,16 @@ export function FormularioChofer({
       className="formulario"
       onSubmit={(e) => {
         const campo = leerCampos(e)
+        const licencia = campo('NumeroLicencia').trim()
+        if (!/^[0-9]+$/.test(licencia)) {
+          setError('El número de licencia no puede ser negativo ni contener letras (solo números positivos)')
+          return
+        }
+        const telefono = campo('Telefono').trim()
+        if (!/^\+?[0-9\s\-()]{6,20}$/.test(telefono)) {
+          setError('El teléfono debe tener un formato válido (entre 6 y 20 caracteres numéricos)')
+          return
+        }
         const ingreso = campo('IngresoTurno')
         const fin = campo('FinalizacionTurno')
         if (new Date(fin) <= new Date(ingreso)) {
@@ -37,11 +47,15 @@ export function FormularioChofer({
           return
         }
         const maxViajes = Number(campo('MaxViajes')) || 1
+        if (maxViajes < 1) {
+          setError('La cantidad máxima de viajes debe ser al menos 1')
+          return
+        }
         const datos: DatosChofer = {
           Nombre: campo('Nombre'),
           Apellido: campo('Apellido'),
-          NumeroLicencia: campo('NumeroLicencia'),
-          Telefono: campo('Telefono'),
+          NumeroLicencia: licencia,
+          Telefono: telefono,
           EstadoChofer: campo('EstadoChofer') as DatosChofer['EstadoChofer'],
           IngresoTurno: deInputFechaHora(ingreso),
           FinalizacionTurno: deInputFechaHora(fin),
@@ -77,11 +91,26 @@ export function FormularioChofer({
         </Campo>
       </div>
       <div className="formulario__fila">
-        <Campo etiqueta="N° de licencia">
-          <input name="NumeroLicencia" required maxLength={191} defaultValue={inicial?.NumeroLicencia} />
+        <Campo etiqueta="N° de licencia" ayuda="Solo números positivos">
+          <input
+            name="NumeroLicencia"
+            required
+            pattern="[0-9]+"
+            title="Solo dígitos numéricos positivos"
+            maxLength={191}
+            defaultValue={inicial?.NumeroLicencia}
+          />
         </Campo>
-        <Campo etiqueta="Teléfono">
-          <input name="Telefono" type="tel" required maxLength={191} defaultValue={inicial?.Telefono} />
+        <Campo etiqueta="Teléfono" ayuda="Ej: 341 555-1234">
+          <input
+            name="Telefono"
+            type="tel"
+            required
+            pattern="^\+?[0-9\s\-()]{6,20}$"
+            title="Entre 6 y 20 caracteres numéricos"
+            maxLength={191}
+            defaultValue={inicial?.Telefono}
+          />
         </Campo>
       </div>
       <div className="formulario__fila">

@@ -11,6 +11,7 @@ import {
   Menu,
   PackageSearch,
   Plus,
+  ShieldAlert,
   UserCog,
   Users,
   type LucideIcon,
@@ -41,6 +42,7 @@ const SECUNDARIOS: ItemNav[] = [
   { a: '/clientes', etiqueta: 'Clientes', icono: Users },
   { a: '/extravios', etiqueta: 'Extravíos', icono: PackageSearch },
   { a: '/usuarios', etiqueta: 'Usuarios', icono: UserCog, soloAdmin: true },
+  { a: '/admin/mantenimiento', etiqueta: 'Mantenimiento', icono: ShieldAlert, soloAdmin: true },
 ]
 
 function Marca() {

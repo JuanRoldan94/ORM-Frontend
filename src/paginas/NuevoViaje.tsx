@@ -54,9 +54,13 @@ export function NuevoViaje() {
             let idCliente = clienteElegido?.IdCliente
             if (!idCliente) {
               if (!clienteNuevo) throw new Error('Elegí un cliente o cargá uno nuevo')
+              const telefonoNuevo = campo('Telefono').trim()
+              if (!/^\+?[0-9\s\-()]{6,20}$/.test(telefonoNuevo)) {
+                throw new Error('El teléfono del nuevo cliente debe tener entre 6 y 20 caracteres numéricos')
+              }
               const creado = await api.clientes.crear({
                 ApellidoYNombre: campo('ApellidoYNombre'),
-                Telefono: campo('Telefono'),
+                Telefono: telefonoNuevo,
               })
               idCliente = creado.IdCliente
             }
@@ -142,11 +146,13 @@ export function NuevoViaje() {
                 <Campo etiqueta="Apellido y nombre">
                   <input name="ApellidoYNombre" required maxLength={191} placeholder="García, María" />
                 </Campo>
-                <Campo etiqueta="Teléfono">
+                <Campo etiqueta="Teléfono" ayuda="Ej: 341 555-1234">
                   <input
                     name="Telefono"
                     type="tel"
                     required
+                    pattern="^\+?[0-9\s\-()]{6,20}$"
+                    title="Entre 6 y 20 caracteres numéricos"
                     maxLength={191}
                     defaultValue={/[a-z]/i.test(busqueda) ? '' : busqueda}
                   />

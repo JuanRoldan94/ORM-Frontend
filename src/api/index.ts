@@ -10,8 +10,10 @@ import type {
   DatosViaje,
   EstadoChofer,
   EstadoDeViaje,
+  EstadoMantenimientoRespuesta,
   EstadoOperativo,
   ExtravioConDetalle,
+  ScopeMantenimientoCompleto,
   Usuario,
   Vehiculo,
   Viaje,
@@ -93,5 +95,11 @@ export const api = {
     editar: (id: number, datos: Partial<DatosExtravio>) =>
       http.patch<ExtravioConDetalle>(`/extravios/${id}`, datos),
     eliminar: (id: number) => http.delete<ExtravioConDetalle>(`/extravios/${id}`),
+  },
+
+  mantenimiento: {
+    obtenerEstado: () => http.get<EstadoMantenimientoRespuesta>('/system/maintenance-status'),
+    actualizarScope: (scope: string, datos: { isActive: boolean; message?: string }) =>
+      http.patch<ScopeMantenimientoCompleto>(`/admin/maintenance/${scope}`, datos),
   },
 }
